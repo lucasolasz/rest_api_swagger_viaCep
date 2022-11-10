@@ -34,7 +34,8 @@ public class ClienteServiceImpl implements ClienteService {
 	}
 
 	@Override
-	public Cliente buscarPorId(Long id) {
+	public Cliente buscarPorId(Long id) {		
+		//Optional tem uma implementação de poder ou não existir um cliente.
 		Optional<Cliente> cliente = clienteRepository.findById(id);
 		return cliente.get();
 	}
@@ -46,6 +47,7 @@ public class ClienteServiceImpl implements ClienteService {
 
 	@Override
 	public void atualizar(Long id, Cliente cliente) {
+		//Optional tem uma implementação de poder ou não existir um cliente.
 		Optional<Cliente> clienteBd = clienteRepository.findById(id);
 		if(clienteBd.isPresent()) {
 			salvarClienteComCep(cliente);			
@@ -59,7 +61,9 @@ public class ClienteServiceImpl implements ClienteService {
 	}
 	
 	private void salvarClienteComCep(Cliente cliente) {
+		//Verifica se ja tem CEP cadastrado
 		String cep = cliente.getEndereco().getCep();
+		//Se existir, devolve o endereço, caso nao exista um cep, cai no CALLBACK (orElseGet). Que solicita um novo endereço a api ViaCep
 		Endereco endereco = enderecoRepository.findById(cep).orElseGet(() -> {
 			Endereco NovoEndereco = viaCepService.consultarCep(cep);
 			enderecoRepository.save(NovoEndereco);
